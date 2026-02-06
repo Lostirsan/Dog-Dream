@@ -7584,8 +7584,9 @@ MonoBehaviour:
   fadeDuration: 1.5
   holdDuration: 0.5
   dogScaleMultiplier: 0.5
-  dogCameraFOV: 75
-  cameraAttachPoint: {fileID: 0}
+  playerCamera: {fileID: 0}
+  dogCamera: {fileID: 0}
+  objectToHide: {fileID: 0}
 --- !u!65 &1000467628
 BoxCollider:
   m_ObjectHideFlags: 0
