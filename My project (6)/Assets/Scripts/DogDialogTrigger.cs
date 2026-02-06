@@ -15,6 +15,7 @@ public class DogDialogTrigger : MonoBehaviour
     [Header("Trigger Settings")]
     public bool triggerOnce = true;
     public bool requireKeyPress = false;
+    public bool destroyAfterTrigger = false;
     
     private bool hasTriggered = false;
     private bool playerInTrigger = false;
@@ -77,6 +78,12 @@ public class DogDialogTrigger : MonoBehaviour
         if (dogDialogComponent != null)
         {
             dogDialogComponent.SetTextAndStartTyping(dialogMessage);
+        }
+        
+        // Destroy the object if configured to do so
+        if (destroyAfterTrigger)
+        {
+            Destroy(gameObject);
         }
     }
     
