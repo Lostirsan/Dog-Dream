@@ -16,10 +16,11 @@ public class BecomeDogTrigger : MonoBehaviour
     public Camera playerCamera;
     public Camera dogCamera;
 
-    public GameObject objectToHide;
-
     private Transform playerTransform;
     private CharacterController playerController;
+
+    private FpsCharacterController dogController;
+    private FpsCharacterController playerFpsController;
 
     private bool isRunning = false;
 
@@ -30,10 +31,20 @@ public class BecomeDogTrigger : MonoBehaviour
         {
             playerTransform = player.transform;
             playerController = player.GetComponent<CharacterController>();
+            playerFpsController = player.GetComponent<FpsCharacterController>();
 
             if (playerCamera == null)
                 playerCamera = player.GetComponentInChildren<Camera>();
         }
+
+        if (dogCamera != null)
+        {
+            dogController = dogCamera.GetComponentInParent<FpsCharacterController>();
+            dogCamera.gameObject.SetActive(false);
+        }
+
+        if (dogController != null)
+            dogController.enabled = false;
 
         if (fadeImage != null)
         {
@@ -43,9 +54,6 @@ public class BecomeDogTrigger : MonoBehaviour
             fadeImage.color = c;
             fadeImage.gameObject.SetActive(false);
         }
-
-        if (dogCamera != null)
-            dogCamera.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -94,6 +102,7 @@ public class BecomeDogTrigger : MonoBehaviour
         fadeImage.color = c;
 
         if (playerController != null) playerController.enabled = false;
+        if (playerFpsController != null) playerFpsController.enabled = false;
 
         Vector3 scale = playerTransform.localScale;
         scale *= dogScaleMultiplier;
@@ -113,8 +122,8 @@ public class BecomeDogTrigger : MonoBehaviour
         if (dogCamera != null)
             dogCamera.gameObject.SetActive(true);
 
-        if (objectToHide != null)
-            objectToHide.SetActive(false);
+        if (dogController != null)
+            dogController.enabled = true;
 
         yield return new WaitForSeconds(holdDuration);
 
@@ -131,6 +140,8 @@ public class BecomeDogTrigger : MonoBehaviour
         c.a = 0f;
         fadeImage.color = c;
         fadeImage.gameObject.SetActive(false);
+
+        gameObject.SetActive(false);
 
         isRunning = false;
     }
