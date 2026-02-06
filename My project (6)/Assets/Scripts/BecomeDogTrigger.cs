@@ -128,7 +128,7 @@ public class BecomeDogTrigger : MonoBehaviour
             dogController.enabled = true;
 
         if (doorToDelete != null)
-            Destroy(doorToDelete);
+            doorToDelete.SetActive(false);
 
         yield return new WaitForSeconds(holdDuration);
 

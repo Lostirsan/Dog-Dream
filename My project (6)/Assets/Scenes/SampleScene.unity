@@ -3976,7 +3976,7 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 1
+  m_Height: 2
   m_Radius: 0.5
   m_SlopeLimit: 45
   m_StepOffset: 0.3
@@ -14468,7 +14468,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1922441754
 RectTransform:
   m_ObjectHideFlags: 0
@@ -15244,6 +15244,7 @@ GameObject:
   - component: {fileID: 2112982298}
   - component: {fileID: 2112982297}
   - component: {fileID: 2112982296}
+  - component: {fileID: 2112982300}
   m_Layer: 0
   m_Name: Pillar_Center
   m_TagString: Untagged
@@ -15344,6 +15345,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2112982300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2112982295}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7eb4581bbd1378247956cf1eadd3ac8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogSequence
+  dialogMessage: Let`s jump on the walls and eat all Hot-Dogs
+  dogDialogUI: {fileID: 1658499294}
+  dialogText: {fileID: 0}
+  delayedTrigger: 0
+  delaySeconds: 2
 --- !u!1 &2126839714
 GameObject:
   m_ObjectHideFlags: 0

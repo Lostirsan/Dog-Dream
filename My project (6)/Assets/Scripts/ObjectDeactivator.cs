@@ -1,10 +1,9 @@
 using UnityEngine;
 
-public class DoorActivator : MonoBehaviour
+public class ObjectDeactivator : MonoBehaviour
 {
     public MonoBehaviour scriptToActivate;
     public GameObject objectToActivate;
-    public GameObject objectToDeactivate;
     public bool triggerOnce = true;
 
     private bool activated = false;
@@ -20,9 +19,6 @@ public class DoorActivator : MonoBehaviour
 
             if (scriptToActivate != null)
                 scriptToActivate.enabled = true;
-
-            if (objectToDeactivate != null)
-                objectToDeactivate.SetActive(false);
 
             activated = true;
         }
