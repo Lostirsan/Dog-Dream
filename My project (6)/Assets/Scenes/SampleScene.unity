@@ -577,7 +577,7 @@ MonoBehaviour:
   lockCursorOnStart: 1
   moveSpeed: 5
   sprintSpeed: 8
-  jumpForce: 5
+  jumpHeight: 1.25
   jumpCooldown: 0.2
   groundCheckDistance: 0.3
   surfaceCheckDistance: 1
@@ -586,6 +586,10 @@ MonoBehaviour:
     m_Bits: 4294967295
   rotationSpeed: 10
   surfaceStickForce: 20
+  cameraTransitionSpeed: 8
+  cameraRollSmoothing: 5
+  enableStrafeTilt: 1
+  maxStrafeTilt: 3
   moveResponsiveness: 14
 --- !u!1 &410087039
 GameObject:

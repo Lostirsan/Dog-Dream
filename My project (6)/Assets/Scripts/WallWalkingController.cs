@@ -87,7 +87,7 @@ public class WallWalkingController : MonoBehaviour
     private Vector3 _currentPlanarMove;
     private bool _isGrounded;
     private float _jumpTimer;
-    
+
     // Jump calculation constant (simulates gravity for jump height calculation)
     private const float JumpGravity = -18f;
 
@@ -104,7 +104,7 @@ public class WallWalkingController : MonoBehaviour
         _currentUp = transform.up;
         _targetUp = transform.up;
         _smoothedUp = transform.up;
-        
+
         if (cameraPivot != null)
         {
             _cameraCurrentRotation = cameraPivot.localRotation;
@@ -161,104 +161,52 @@ public class WallWalkingController : MonoBehaviour
             return;
         }
 
-        Vector3 checkOrigin = transform.position;
-        float checkDist = (_controller.height * 0.5f) + groundCheckDistance;
+        float castDistance = (_controller.height * 0.5f) + 0.3f;
 
-        // Check directly below (relative to current up)
-        if (Physics.Raycast(checkOrigin, -_currentUp, out RaycastHit groundHit, checkDist, surfaceLayers, QueryTriggerInteraction.Ignore))
+        bool foundSurface = false;
+        RaycastHit bestHit = new RaycastHit();
+        float bestDistance = float.MaxValue;
+
+        Vector3 origin = transform.position;
+
+        Vector3[] directions =
+        {
+        -_currentUp,
+        transform.forward,
+        -transform.forward,
+        transform.right,
+        -transform.right
+    };
+
+        foreach (Vector3 dir in directions)
+        {
+            if (Physics.Raycast(origin, dir, out RaycastHit hit, castDistance, surfaceLayers, QueryTriggerInteraction.Ignore))
+            {
+                if (hit.distance < bestDistance)
+                {
+                    bestDistance = hit.distance;
+                    bestHit = hit;
+                    foundSurface = true;
+                }
+            }
+        }
+
+        if (foundSurface)
         {
             _isGrounded = true;
-            _targetUp = groundHit.normal;
+            _targetUp = bestHit.normal;
 
-            // Reset vertical velocity when grounded
-            float upVelocity = Vector3.Dot(_velocity, _currentUp);
-            if (upVelocity < 0)
-            {
-                _velocity -= _currentUp * upVelocity;
-            }
+            float upVel = Vector3.Dot(_velocity, _currentUp);
+            if (upVel < 0)
+                _velocity -= _currentUp * upVel;
         }
         else
         {
             _isGrounded = false;
         }
-
-        // Check for surfaces in movement direction (for wall transitions)
-        Vector2 moveInput = ReadMove();
-        if (moveInput.sqrMagnitude > 0.1f)
-        {
-            Vector3 moveDir = GetMoveDirection(moveInput);
-            
-            // Check forward and down for surface transitions
-            Vector3 forwardCheckOrigin = transform.position + moveDir * (_controller.radius + 0.1f);
-            
-            // Check if there's a wall in front
-            if (Physics.Raycast(forwardCheckOrigin, moveDir, out RaycastHit wallHit, surfaceCheckDistance, surfaceLayers, QueryTriggerInteraction.Ignore))
-            {
-                // Found a wall - prepare to walk on it
-                float angle = Vector3.Angle(_currentUp, wallHit.normal);
-                if (angle > 30f && angle < 150f)
-                {
-                    _targetUp = wallHit.normal;
-                }
-            }
-            
-            // Check if we're about to walk off an edge (look for surface below in front)
-            Vector3 edgeCheckOrigin = transform.position + moveDir * (_controller.radius + 0.3f);
-            if (Physics.Raycast(edgeCheckOrigin, -_currentUp, out RaycastHit edgeHit, checkDist * 2f, surfaceLayers, QueryTriggerInteraction.Ignore))
-            {
-                // Surface continues - check if it curves
-                float angle = Vector3.Angle(_currentUp, edgeHit.normal);
-                if (angle > 10f)
-                {
-                    _targetUp = edgeHit.normal;
-                }
-            }
-            else
-            {
-                // No surface below in front - check for surface wrapping around (like going over an edge to a wall)
-                Vector3 wrapCheckOrigin = edgeCheckOrigin - _currentUp * (_controller.height * 0.5f);
-                if (Physics.Raycast(wrapCheckOrigin, -moveDir, out RaycastHit wrapHit, surfaceCheckDistance, surfaceLayers, QueryTriggerInteraction.Ignore))
-                {
-                    _targetUp = wrapHit.normal;
-                }
-            }
-            
-            // Additional check for walking DOWN slopes/ramps
-            // Cast a ray diagonally down in the movement direction to find sloped surfaces
-            Vector3 slopeCheckDir = (moveDir - _currentUp).normalized;
-            Vector3 slopeCheckOrigin = transform.position + moveDir * (_controller.radius * 0.5f);
-            if (Physics.Raycast(slopeCheckOrigin, slopeCheckDir, out RaycastHit slopeHit, checkDist * 1.5f, surfaceLayers, QueryTriggerInteraction.Ignore))
-            {
-                float angle = Vector3.Angle(_currentUp, slopeHit.normal);
-                if (angle > 5f && angle < 80f)
-                {
-                    _targetUp = slopeHit.normal;
-                    
-                    // If we found a slope and we're not grounded, snap to it
-                    if (!_isGrounded)
-                    {
-                        _isGrounded = true;
-                    }
-                }
-            }
-        }
-        
-        // When grounded, also do a spherecast to better detect surface changes beneath us
-        if (_isGrounded)
-        {
-            Vector3 sphereOrigin = transform.position;
-            float sphereRadius = _controller.radius * 0.8f;
-            if (Physics.SphereCast(sphereOrigin, sphereRadius, -_currentUp, out RaycastHit sphereHit, checkDist, surfaceLayers, QueryTriggerInteraction.Ignore))
-            {
-                float angle = Vector3.Angle(_currentUp, sphereHit.normal);
-                if (angle > 5f && angle < 80f)
-                {
-                    // Blend towards the new normal for smoother transitions
-                    _targetUp = Vector3.Slerp(_targetUp, sphereHit.normal, 0.5f).normalized;
-                }
-            }
-        }
     }
+
+
 
     /// <summary>
     /// Smoothly rotates the player to align with the target surface normal.
@@ -270,13 +218,13 @@ public class WallWalkingController : MonoBehaviour
         // Faster when angle is large, slower for fine adjustments
         float angleDiff = Vector3.Angle(_currentUp, _targetUp);
         float adaptiveSpeed = rotationSpeed * Mathf.Clamp01(angleDiff / 45f + 0.3f);
-        
+
         _currentUp = Vector3.Slerp(_currentUp, _targetUp, Time.deltaTime * adaptiveSpeed);
         _currentUp.Normalize();
 
         // Calculate the rotation to align transform.up with _currentUp while preserving forward direction
         Vector3 currentForward = transform.forward;
-        
+
         // Project forward onto the plane perpendicular to the new up
         Vector3 newForward = Vector3.ProjectOnPlane(currentForward, _currentUp);
         if (newForward.sqrMagnitude < 0.001f)
@@ -289,7 +237,7 @@ public class WallWalkingController : MonoBehaviour
         // Apply yaw rotation around the current up axis
         Quaternion yawRotation = Quaternion.AngleAxis(_yaw, _currentUp);
         newForward = yawRotation * Vector3.ProjectOnPlane(Vector3.forward, _currentUp).normalized;
-        
+
         if (newForward.sqrMagnitude < 0.001f)
         {
             newForward = yawRotation * Vector3.ProjectOnPlane(Vector3.right, _currentUp).normalized;
@@ -349,8 +297,8 @@ public class WallWalkingController : MonoBehaviour
 
         // Smoothly interpolate to target rotation
         _cameraCurrentRotation = Quaternion.Slerp(
-            _cameraCurrentRotation, 
-            _cameraTargetRotation, 
+            _cameraCurrentRotation,
+            _cameraTargetRotation,
             Time.deltaTime * cameraTransitionSpeed
         );
 
@@ -362,11 +310,11 @@ public class WallWalkingController : MonoBehaviour
     /// </summary>
     private Vector3 GetMoveDirection(Vector2 moveInput)
     {
-        Vector3 inputDir = new Vector3(moveInput.x, 0f, moveInput.y);
-        if (inputDir.sqrMagnitude > 1f) inputDir.Normalize();
+        Vector3 forward = Vector3.ProjectOnPlane(cameraPivot.forward, _currentUp).normalized;
+        Vector3 right = Vector3.Cross(_currentUp, forward).normalized;
 
-        // Transform input to world space based on player orientation
-        return transform.TransformDirection(inputDir);
+        Vector3 moveDir = forward * moveInput.y + right * moveInput.x;
+        return moveDir.normalized;
     }
 
     /// <summary>
@@ -382,8 +330,26 @@ public class WallWalkingController : MonoBehaviour
 
         Vector3 desiredMove = moveDir * speed;
 
-        _currentPlanarMove = Vector3.Lerp(_currentPlanarMove, desiredMove, Time.deltaTime * moveResponsiveness);
+        // ???????????, ??? ???????? ?????? ?????? ?? ???????????
+        desiredMove = Vector3.ProjectOnPlane(desiredMove, _currentUp);
+
+        _currentPlanarMove = Vector3.Lerp(
+            _currentPlanarMove,
+            desiredMove,
+            Time.deltaTime * moveResponsiveness
+        );
+
+        // ????? ?????????? ???????? ????? ????? ?? ???????? ??????
+        if (moveInput.sqrMagnitude < 0.01f)
+        {
+            _currentPlanarMove = Vector3.Lerp(
+                _currentPlanarMove,
+                Vector3.zero,
+                Time.deltaTime * 8f
+            );
+        }
     }
+
 
     /// <summary>
     /// Handles jumping in the direction of current up.
@@ -407,26 +373,29 @@ public class WallWalkingController : MonoBehaviour
     {
         Vector3 totalMove = Vector3.zero;
 
-        // Add planar movement
         totalMove += _currentPlanarMove * Time.deltaTime;
-
-        // Add velocity (from jumping)
         totalMove += _velocity * Time.deltaTime;
 
-        // Apply stick force when grounded (pulls player towards surface)
-        if (_isGrounded && _jumpTimer <= 0)
-        {
-            totalMove -= _currentUp * surfaceStickForce * Time.deltaTime;
-        }
-
-        // Decay velocity when grounded
         if (_isGrounded)
         {
-            _velocity = Vector3.Lerp(_velocity, Vector3.zero, Time.deltaTime * 5f);
+            // ????????? ??????? ????? ???????? ????? ???????????
+            _velocity = Vector3.Project(_velocity, _currentUp);
+
+            // ?????? ???????? ?????? ? ???????????
+            Vector3 stick = -_currentUp * surfaceStickForce * Time.deltaTime;
+            totalMove += stick;
+        }
+        else
+        {
+            // ????????????????
+            _velocity += -_currentUp * 9f * Time.deltaTime;
         }
 
         _controller.Move(totalMove);
     }
+
+
+
 
     // -------------------------
     // Input abstraction layer
