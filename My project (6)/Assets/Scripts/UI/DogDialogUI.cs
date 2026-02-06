@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace Game.UI
@@ -27,18 +28,16 @@ namespace Game.UI
 
         private void OnEnable()
         {
-            // Show mouse while a dialog is active.
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
-
             StartTyping();
         }
 
-        private void OnDisable()
+        private void Update()
         {
-            // Hide/lock mouse back for FPS.
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
+            // Close dialog on left mouse button click (using new Input System)
+            if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+            {
+                OnContinueClicked();
+            }
         }
 
         public void StartTyping()
