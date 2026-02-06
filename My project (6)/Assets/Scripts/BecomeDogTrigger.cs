@@ -12,13 +12,14 @@ public class BecomeDogTrigger : MonoBehaviour
     public float holdDuration = 1f;
 
     public float dogScaleMultiplier = 0.5f;
-    public float dogCameraFOV = 75f;
 
-    public Transform cameraAttachPoint;
+    public Camera playerCamera;
+    public Camera dogCamera;
+
+    public GameObject objectToHide;
 
     private Transform playerTransform;
     private CharacterController playerController;
-    private Camera playerCamera;
 
     private bool isRunning = false;
 
@@ -29,7 +30,9 @@ public class BecomeDogTrigger : MonoBehaviour
         {
             playerTransform = player.transform;
             playerController = player.GetComponent<CharacterController>();
-            playerCamera = player.GetComponentInChildren<Camera>();
+
+            if (playerCamera == null)
+                playerCamera = player.GetComponentInChildren<Camera>();
         }
 
         if (fadeImage != null)
@@ -40,6 +43,9 @@ public class BecomeDogTrigger : MonoBehaviour
             fadeImage.color = c;
             fadeImage.gameObject.SetActive(false);
         }
+
+        if (dogCamera != null)
+            dogCamera.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -102,16 +108,13 @@ public class BecomeDogTrigger : MonoBehaviour
         }
 
         if (playerCamera != null)
-        {
-            playerCamera.fieldOfView = dogCameraFOV;
+            playerCamera.gameObject.SetActive(false);
 
-            if (cameraAttachPoint != null)
-            {
-                playerCamera.transform.SetParent(cameraAttachPoint);
-                playerCamera.transform.localPosition = Vector3.zero;
-                playerCamera.transform.localRotation = Quaternion.identity;
-            }
-        }
+        if (dogCamera != null)
+            dogCamera.gameObject.SetActive(true);
+
+        if (objectToHide != null)
+            objectToHide.SetActive(false);
 
         yield return new WaitForSeconds(holdDuration);
 
@@ -128,8 +131,6 @@ public class BecomeDogTrigger : MonoBehaviour
         c.a = 0f;
         fadeImage.color = c;
         fadeImage.gameObject.SetActive(false);
-
-        gameObject.SetActive(false);
 
         isRunning = false;
     }
