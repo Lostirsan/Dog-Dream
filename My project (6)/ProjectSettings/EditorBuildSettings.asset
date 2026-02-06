@@ -17,7 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/FlappyBird.unity
     guid: 531279721a18d82438a57e19aee5814d
-  - enabled: 1
+  - enabled: 0
     path: Assets/GameScene.unity
     guid: 6232b8d914e53134593fbdd8d9a8d958
   m_configObjects:
