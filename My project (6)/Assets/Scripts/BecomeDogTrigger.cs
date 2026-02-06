@@ -7,17 +7,19 @@ public class BecomeDogTrigger : MonoBehaviour
 {
     public Image fadeImage;
     public float interactDistance = 3f;
+
     public float fadeDuration = 1.5f;
-    public float holdDuration = 0.5f;
+    public float holdDuration = 1f;
 
     public float dogScaleMultiplier = 0.5f;
-    public float dogCameraFOV = 75f;
 
-    public Transform cameraAttachPoint;
+    public Camera playerCamera;
+    public Camera dogCamera;
+
+    public GameObject objectToHide;
 
     private Transform playerTransform;
     private CharacterController playerController;
-    private Camera playerCamera;
 
     private bool isRunning = false;
 
@@ -28,16 +30,22 @@ public class BecomeDogTrigger : MonoBehaviour
         {
             playerTransform = player.transform;
             playerController = player.GetComponent<CharacterController>();
-            playerCamera = player.GetComponentInChildren<Camera>();
+
+            if (playerCamera == null)
+                playerCamera = player.GetComponentInChildren<Camera>();
         }
 
         if (fadeImage != null)
         {
+            fadeImage.material = null;
             Color c = fadeImage.color;
             c.a = 0f;
             fadeImage.color = c;
             fadeImage.gameObject.SetActive(false);
         }
+
+        if (dogCamera != null)
+            dogCamera.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -62,11 +70,12 @@ public class BecomeDogTrigger : MonoBehaviour
 
     private IEnumerator BecomeDogRoutine()
     {
+        if (fadeImage == null) yield break;
+
         isRunning = true;
 
-        gameObject.SetActive(false);
-
         fadeImage.gameObject.SetActive(true);
+
         Color c = fadeImage.color;
         c.a = 0f;
         fadeImage.color = c;
@@ -80,6 +89,9 @@ public class BecomeDogTrigger : MonoBehaviour
             fadeImage.color = c;
             yield return null;
         }
+
+        c.a = 1f;
+        fadeImage.color = c;
 
         if (playerController != null) playerController.enabled = false;
 
@@ -96,18 +108,29 @@ public class BecomeDogTrigger : MonoBehaviour
         }
 
         if (playerCamera != null)
-        {
-            playerCamera.fieldOfView = dogCameraFOV;
+            playerCamera.gameObject.SetActive(false);
 
-            if (cameraAttachPoint != null)
-            {
-                playerCamera.transform.SetParent(cameraAttachPoint);
-                playerCamera.transform.localPosition = Vector3.zero;
-                playerCamera.transform.localRotation = Quaternion.identity;
-            }
-        }
+        if (dogCamera != null)
+            dogCamera.gameObject.SetActive(true);
+
+        if (objectToHide != null)
+            objectToHide.SetActive(false);
 
         yield return new WaitForSeconds(holdDuration);
+
+        elapsed = 0f;
+        while (elapsed < fadeDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = 1f - Mathf.Clamp01(elapsed / fadeDuration);
+            c.a = t;
+            fadeImage.color = c;
+            yield return null;
+        }
+
+        c.a = 0f;
+        fadeImage.color = c;
+        fadeImage.gameObject.SetActive(false);
 
         isRunning = false;
     }
