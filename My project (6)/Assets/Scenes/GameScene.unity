@@ -117992,7 +117992,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Gameplay.TeleportOnTrigger
   sceneToLoad: SampleScene
-  playerRootName: Player
+  playerRootName: pes-left
 --- !u!65 &8720729964920517944
 BoxCollider:
   m_ObjectHideFlags: 0
