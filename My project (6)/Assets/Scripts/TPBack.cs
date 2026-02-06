@@ -5,15 +5,12 @@ public class ReturnPlayerTrigger : MonoBehaviour
     public string teleportObjectName = "TP back";
     public float interactionDistance = 3f;
 
+    public float sleepScaleMultiplier = 0.5f;
+
     private Transform playerTransform;
     private CharacterController playerController;
     private Camera playerCamera;
     private Transform teleportDestination;
-
-    private Vector3 originalScale;
-    private float originalHeight;
-    private float originalRadius;
-    private Vector3 originalCenter;
 
     private float originalFOV;
     private Vector3 originalCameraLocalPos;
@@ -28,15 +25,6 @@ public class ReturnPlayerTrigger : MonoBehaviour
             playerTransform = player.transform;
             playerController = player.GetComponent<CharacterController>();
             playerCamera = player.GetComponentInChildren<Camera>();
-
-            originalScale = playerTransform.localScale;
-
-            if (playerController != null)
-            {
-                originalHeight = playerController.height;
-                originalRadius = playerController.radius;
-                originalCenter = playerController.center;
-            }
 
             if (playerCamera != null)
             {
@@ -74,13 +62,15 @@ public class ReturnPlayerTrigger : MonoBehaviour
         playerTransform.position = teleportDestination.position;
         playerTransform.rotation = teleportDestination.rotation;
 
-        playerTransform.localScale = originalScale;
+        float restoreMultiplier = 1f / sleepScaleMultiplier;
+
+        playerTransform.localScale *= restoreMultiplier;
 
         if (playerController != null)
         {
-            playerController.height = originalHeight;
-            playerController.radius = originalRadius;
-            playerController.center = originalCenter;
+            playerController.height *= restoreMultiplier;
+            playerController.radius *= restoreMultiplier;
+            playerController.center *= restoreMultiplier;
             playerController.enabled = true;
         }
 

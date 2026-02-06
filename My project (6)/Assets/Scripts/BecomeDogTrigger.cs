@@ -16,6 +16,8 @@ public class BecomeDogTrigger : MonoBehaviour
     public Camera playerCamera;
     public Camera dogCamera;
 
+    public GameObject doorToDelete;
+
     private Transform playerTransform;
     private CharacterController playerController;
 
@@ -124,6 +126,9 @@ public class BecomeDogTrigger : MonoBehaviour
 
         if (dogController != null)
             dogController.enabled = true;
+
+        if (doorToDelete != null)
+            Destroy(doorToDelete);
 
         yield return new WaitForSeconds(holdDuration);
 
