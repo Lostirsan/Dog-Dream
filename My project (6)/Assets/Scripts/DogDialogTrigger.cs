@@ -16,6 +16,7 @@ public class DogDialogTrigger : MonoBehaviour
     
     private bool hasTriggered = false;
 
+
     private void OnTriggerEnter(Collider other)
     {
         if (triggerOnce && hasTriggered)
@@ -36,27 +37,17 @@ public class DogDialogTrigger : MonoBehaviour
             return;
         }
         
-        // Set the text via reflection or by accessing the serialized field
+        // Get the DogDialogUI component
         var dogDialogComponent = dogDialogUI.GetComponent<Game.UI.DogDialogUI>();
+        
+        // Activate the dialog UI first
+        dogDialogUI.SetActive(true);
+        
+        // Set the text and start typing animation using the public method
         if (dogDialogComponent != null)
         {
-            // Use reflection to set the private fullText field
-            var fieldInfo = typeof(Game.UI.DogDialogUI).GetField("fullText", 
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            if (fieldInfo != null)
-            {
-                fieldInfo.SetValue(dogDialogComponent, dialogMessage);
-            }
+            dogDialogComponent.SetTextAndStartTyping(dialogMessage);
         }
-        
-        // Also set the text directly if we have a reference
-        if (dialogText != null)
-        {
-            dialogText.text = "";
-        }
-        
-        // Activate the dialog UI (this will trigger OnEnable and start typing)
-        dogDialogUI.SetActive(true);
     }
     
     public void ResetTrigger()

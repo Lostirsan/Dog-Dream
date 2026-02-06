@@ -1,6 +1,7 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class DrawerMech : MonoBehaviour 
 {
@@ -13,26 +14,36 @@ public class DrawerMech : MonoBehaviour
 
     public bool drawerBool;
 
-    
+    private bool playerInTrigger = false;
 
 	void Start()
 	{
         drawerBool = false;
 	}
-		
-	void OnTriggerStay(Collider col)
+
+	void OnTriggerEnter(Collider col)
 	{
-		if(col.gameObject.tag == ("Player") && Input.GetKeyDown(KeyCode.E))
+		if(col.gameObject.tag == ("Player"))
 		{
-			if (!drawerBool)
-                drawerBool = true;
-			else
-                drawerBool = false;
+			playerInTrigger = true;
+		}
+	}
+
+	void OnTriggerExit(Collider col)
+	{
+		if(col.gameObject.tag == ("Player"))
+		{
+			playerInTrigger = false;
 		}
 	}
 
 	void Update()
 	{
+		// Check for E key press using new Input System
+		if (playerInTrigger && Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
+		{
+			drawerBool = !drawerBool;
+		}
 
         if (drawerBool)
         {
@@ -55,4 +66,3 @@ public class DrawerMech : MonoBehaviour
     }
 
 }
-

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class DoorMech : MonoBehaviour 
 {
@@ -23,41 +24,55 @@ public class DoorMech : MonoBehaviour
 	public float openSoundLeadSeconds = 0f;
 
 	private Coroutine pendingStateRoutine;
+	private bool playerInTrigger = false;
 
 	void Start()
 	{
 		doorBool = false;
 		EnsureAudioWired();
 	}
-		
-	void OnTriggerStay(Collider col)
+
+	void OnTriggerEnter(Collider col)
 	{
-		if(col.gameObject.tag == ("Player") && Input.GetKeyDown(KeyCode.E))
+		if(col.gameObject.tag == ("Player"))
 		{
-			var wasOpen = doorBool;
-			var wantsOpen = !doorBool;
-
-			if (pendingStateRoutine != null)
-			{
-				StopCoroutine(pendingStateRoutine);
-				pendingStateRoutine = null;
-			}
-
-			// Sound leads opening animation: play sound now, open a moment later.
-			if (!wasOpen && wantsOpen && playSoundOnOpen && openSoundLeadSeconds > 0f)
-			{
-				PlayOpenSound();
-				pendingStateRoutine = StartCoroutine(SetDoorBoolAfterDelay(true, openSoundLeadSeconds));
-				return;
-			}
-
-			doorBool = wantsOpen;
-
-			if (!wasOpen && doorBool && playSoundOnOpen)
-				PlayOpenSound();
-			else if (wasOpen && !doorBool && playSoundOnClose)
-				PlayOpenSound();
+			playerInTrigger = true;
 		}
+	}
+
+	void OnTriggerExit(Collider col)
+	{
+		if(col.gameObject.tag == ("Player"))
+		{
+			playerInTrigger = false;
+		}
+	}
+
+	private void TryInteract()
+	{
+		var wasOpen = doorBool;
+		var wantsOpen = !doorBool;
+
+		if (pendingStateRoutine != null)
+		{
+			StopCoroutine(pendingStateRoutine);
+			pendingStateRoutine = null;
+		}
+
+		// Sound leads opening animation: play sound now, open a moment later.
+		if (!wasOpen && wantsOpen && playSoundOnOpen && openSoundLeadSeconds > 0f)
+		{
+			PlayOpenSound();
+			pendingStateRoutine = StartCoroutine(SetDoorBoolAfterDelay(true, openSoundLeadSeconds));
+			return;
+		}
+
+		doorBool = wantsOpen;
+
+		if (!wasOpen && doorBool && playSoundOnOpen)
+			PlayOpenSound();
+		else if (wasOpen && !doorBool && playSoundOnClose)
+			PlayOpenSound();
 	}
 
 	private IEnumerator SetDoorBoolAfterDelay(bool value, float delay)
@@ -99,6 +114,12 @@ public class DoorMech : MonoBehaviour
 
 	void Update()
 	{
+		// Check for E key press using new Input System
+		if (playerInTrigger && Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
+		{
+			TryInteract();
+		}
+
 		if (doorBool)
 			transform.rotation = Quaternion.Lerp (transform.rotation, Quaternion.Euler (OpenRotation), rotSpeed * Time.deltaTime);
 		else
@@ -106,4 +127,3 @@ public class DoorMech : MonoBehaviour
 	}
 
 }
-

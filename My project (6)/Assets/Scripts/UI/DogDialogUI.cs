@@ -15,10 +15,20 @@ namespace Game.UI
         [Header("Dialog")]
         [TextArea]
         [SerializeField] private string fullText = "Базовый диалог собачки";
-        [SerializeField, Min(0.001f)] private float secondsPerChar = 0.03f;
+        [SerializeField, Min(0.001f)] private float secondsPerChar = 0.1f;
 
         private Coroutine _typing;
         private bool _isTyping;
+
+        /// <summary>
+        /// Sets the dialog text and starts the typing animation.
+        /// </summary>
+        /// <param name="text">The text to display with typing animation.</param>
+        public void SetTextAndStartTyping(string text)
+        {
+            fullText = text;
+            StartTyping();
+        }
 
         private void Awake()
         {
