@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.coplaydev.coplay": {
-      "version": "https://github.com/CoplayDev/coplay-unity-plugin.git",
+      "version": "https://github.com/CoplayDev/coplay-unity-plugin.git#beta",
       "depth": 0,
       "source": "git",
       "dependencies": {
