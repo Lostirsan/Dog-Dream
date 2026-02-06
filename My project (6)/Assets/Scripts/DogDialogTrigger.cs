@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using TMPro;
 
 public class DogDialogTrigger : MonoBehaviour
@@ -13,18 +14,47 @@ public class DogDialogTrigger : MonoBehaviour
     
     [Header("Trigger Settings")]
     public bool triggerOnce = true;
+    public bool requireKeyPress = false;
     
     private bool hasTriggered = false;
-
+    private bool playerInTrigger = false;
 
     private void OnTriggerEnter(Collider other)
+    {
+        if (!other.CompareTag("Player"))
+            return;
+        
+        playerInTrigger = true;
+        
+        // If not requiring key press, show dialog immediately
+        if (!requireKeyPress)
+        {
+            TryShowDialog();
+        }
+    }
+    
+    private void OnTriggerExit(Collider other)
+    {
+        if (!other.CompareTag("Player"))
+            return;
+            
+        playerInTrigger = false;
+    }
+    
+    private void Update()
+    {
+        // Check for E key press when player is in trigger zone
+        if (requireKeyPress && playerInTrigger && Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
+        {
+            TryShowDialog();
+        }
+    }
+    
+    private void TryShowDialog()
     {
         if (triggerOnce && hasTriggered)
             return;
             
-        if (!other.CompareTag("Player"))
-            return;
-        
         hasTriggered = true;
         ShowDialog();
     }
