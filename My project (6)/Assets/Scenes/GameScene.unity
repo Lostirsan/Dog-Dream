@@ -6399,7 +6399,7 @@ GameObject:
   - component: {fileID: 740431172}
   - component: {fileID: 740431171}
   m_Layer: 0
-  m_Name: Cube (1)
+  m_Name: Cube (1)1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9671,7 +9671,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adacf75302abf5547ae021bb1f57d983, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Gameplay.Teleport
-  targetObjectName: Cube (1)
+  targetObjectName: Cube (1)1
   playerRootName: Player
 --- !u!114 &1065070577
 MonoBehaviour:
@@ -9685,9 +9685,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec253182f9f78fa468000c6773aca02c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DogDialogTrigger
-  dialogMessage: I love you
-  dogDialogUI: {fileID: 0}
-  dialogText: {fileID: 0}
+  dialogMessage: That`s weird
+  dogDialogUI: {fileID: 783711231}
+  dialogText: {fileID: 439608127}
   triggerOnce: 1
   requireKeyPress: 0
   destroyAfterTrigger: 0
@@ -11768,7 +11768,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adacf75302abf5547ae021bb1f57d983, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Gameplay.Teleport
-  targetObjectName: Cube (1)
+  targetObjectName: Cube (1)1
   playerRootName: Player
 --- !u!114 &1287767638
 MonoBehaviour:
@@ -11782,9 +11782,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec253182f9f78fa468000c6773aca02c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DogDialogTrigger
-  dialogMessage: I love you
-  dogDialogUI: {fileID: 0}
-  dialogText: {fileID: 0}
+  dialogMessage: WTH?
+  dogDialogUI: {fileID: 783711231}
+  dialogText: {fileID: 439608127}
   triggerOnce: 1
   requireKeyPress: 0
   destroyAfterTrigger: 0
@@ -120478,3 +120478,5 @@ SceneRoots:
   - {fileID: 756450805}
   - {fileID: 934226024}
   - {fileID: 1358804247}
+  - {fileID: 946888715}
+  - {fileID: 1747607421}
